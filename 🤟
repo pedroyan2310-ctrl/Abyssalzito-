@@ -481,71 +481,184 @@ for n,b in pairs(TabBtns) do
 	b.MouseButton1Click:Connect(function() trocarAba(n) end)
 end
 
---==========================================
--- WIDGETS
---==========================================
-local function secao(parent, texto)
-	novo("TextLabel", {Size=UDim2.new(1,0,0,18), BackgroundTransparency=1,
-		Text=texto, TextColor3=C.accent, Font=Enum.Font.GothamBold,
-		TextSize=11, TextXAlignment=Enum.TextXAlignment.Left, Parent=parent})
+	local ownerName = obj.ownerName or "Desconhecido"
+	local ehMeu = (ownerId == MEU_ID)
+
+	local linha = novo("Frame", {Size=UDim2.new(1,0,0,54),
+		BackgroundColor3=C.card, BorderSizePixel=0,
+		LayoutOrder=ordem, Parent=ListaUI})
+	cantos(linha, 8)
+	if ehMeu then stroke(linha, C.accent, 1, 0.3) end
+
+	local nomeLbl = novo("TextLabel", {
+		Size=UDim2.new(1,-160,0,18), Position=UDim2.new(0,12,0,6),
+		BackgroundTransparency=1, Text=nome,
+		TextColor3 = ehMeu and C.accent or C.text,
+		Font=Enum.Font.GothamBold, TextSize=12,
+		TextXAlignment=Enum.TextXAlignment.Left,
+		TextTruncate=Enum.TextTruncate.AtEnd, Parent=linha})
+
+	novo("TextLabel", {
+		Size=UDim2.new(1,-160,0,14), Position=UDim2.new(0,12,0,26),
+		BackgroundTransparency=1,
+		Text = ehMeu and ("â­ " .. ownerName .. " (vocÃª)") or ownerName,
+		TextColor3 = ehMeu and C.gold or C.textDim,
+		Font=Enum.Font.Gotham, TextSize=10,
+		TextXAlignment=Enum.TextXAlignment.Left,
+		TextTruncate=Enum.TextTruncate.AtEnd, Parent=linha})
+
+	local bLoad = novo("TextButton", {
+		Size=UDim2.new(0,68,0,28),
+		Position=UDim2.new(1, ehMeu and -148 or -76, 0.5, -14),
+		BackgroundColor3=C.accent, Text="Carregar",
+		TextColor3=Color3.fromRGB(255,255,255),
+		Font=Enum.Font.GothamBold, TextSize=11,
+		AutoButtonColor=false, Parent=linha})
+	cantos(bLoad, 6)
+
+	bLoad.MouseButton1Click:Connect(function()
+		aplicar(obj.data)
+		notificar("âœ” '"..nome.."' carregado", C.success)
+	end)
+
+	if ehMeu then
+		local bDel = novo("TextButton", {
+			Size=UDim2.new(0,68,0,28),
+			Position=UDim2.new(1,-72,0.5,-14),
+			BackgroundColor3=C.danger, Text="Apagar",
+			TextColor3=Color3.fromRGB(255,255,255),
+			Font=Enum.Font.GothamBold, TextSize=11,
+			AutoButtonColor=false, Parent=linha})
+		cantos(bDel, 6)
+
+		bDel.MouseButton1Click:Connect(function()
+			if tostring(obj.ownerId or "") ~= MEU_ID then
+				notificar("âŒ VocÃª nÃ£o pode apagar este preset", C.danger)
+				return
+			end
+
+			PresetsCache[id] = nil
+
+			if firebaseDisponivel() then
+				task.spawn(function()
+					local ok = deletarServidor(id)
+					if not ok then
+						notificar("âš ï¸ Falha ao apagar no servidor", C.warn)
+						task.wait(0.5)
+						sincronizarPresets()
+					end
+				end)
+			else
+				salvarLocal()
+			end
+
+			atualizarLista()
+			notificar("ðŸ—‘ '"..nome.."' apagado", C.danger, 1.5)
+		end)
+	end
 end
 
-local function slider(parent, nome, min, max, default, step)
-	local card = novo("Frame", {Size=UDim2.new(1,0,0,48),
-		BackgroundColor3=C.card, BorderSizePixel=0, Parent=parent})
-	cantos(card, 8)
-	novo("TextLabel", {Size=UDim2.new(0.6,-20,0,16), Position=UDim2.new(0,12,0,6),
-		BackgroundTransparency=1, Text=nome, TextColor3=C.text,
-		Font=Enum.Font.GothamMedium, TextSize=12,
-		TextXAlignment=Enum.TextXAlignment.Left, Parent=card})
-	local valueLbl = novo("TextLabel", {Size=UDim2.new(0.4,-20,0,16),
-		Position=UDim2.new(0.6,0,0,6), BackgroundTransparency=1, Text="",
-		TextColor3=C.accent, Font=Enum.Font.GothamBold, TextSize=12,
-		TextXAlignment=Enum.TextXAlignment.Right, Parent=card})
-	local track = novo("Frame", {Size=UDim2.new(1,-24,0,6),
-		Position=UDim2.new(0,12,0,32), BackgroundColor3=C.input,
-		BorderSizePixel=0, Parent=card})
-	cantos(track, 3)
-	local fill = novo("Frame", {Size=UDim2.new(0,0,1,0), BackgroundColor3=C.accent,
-		BorderSizePixel=0, Parent=track})
-	cantos(fill, 3); gradiente(fill, C.accent, C.accent2, 0)
-	local knob = novo("Frame", {Size=UDim2.new(0,14,0,14), AnchorPoint=Vector2.new(0.5,0.5),
-		Position=UDim2.new(0,0,0.5,0), BackgroundColor3=Color3.fromRGB(255,255,255),
-		BorderSizePixel=0, ZIndex=2, Parent=track})
-	cantos(knob, 7); stroke(knob, C.accent, 2, 0)
-	local hit = novo("TextButton", {Size=UDim2.new(1,0,0,30),
-		Position=UDim2.new(0,0,0,18), BackgroundTransparency=1,
-		Text="", ZIndex=3, Parent=card})
+atualizarLista = function()
+	for _, c in ipairs(ListaUI:GetChildren()) do
+		if c:IsA("Frame") then c:Destroy() end
+	end
 
-	local valor = default
-	local dragging = false
-	local function setVisual(v, disparar)
-		v = math.clamp(v, min, max)
-		local rel = (max==min) and 0 or (v-min)/(max-min)
-		fill.Size = UDim2.new(rel,0,1,0)
-		knob.Position = UDim2.new(rel,0,0.5,0)
-		valueLbl.Text = fnum(v, step)
-		valor = v
-		if disparar and render then render() end
-	end
-	local function fromX(x)
-		local rel = (x - track.AbsolutePosition.X) / math.max(track.AbsoluteSize.X, 1)
-		rel = math.clamp(rel, 0, 1)
-		return math.floor(((min + (max-min)*rel) / step) + 0.5) * step
-	end
-	hit.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1
-		or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true; setVisual(fromX(input.Position.X), true)
+	contadorLbl.Text = "PRESETS (" .. contar() .. ")"
+
+	local entradas = {}
+	for id, obj in pairs(PresetsCache) do
+		if type(obj) == "table" and type(obj.data) == "table" then
+			table.insert(entradas, {id = id, obj = obj})
 		end
+	end
+
+	table.sort(entradas, function(a, b)
+		local aMeu = tostring(a.obj.ownerId or "") == MEU_ID
+		local bMeu = tostring(b.obj.ownerId or "") == MEU_ID
+		if aMeu ~= bMeu then return aMeu end
+		return (a.obj.name or "") < (b.obj.name or "")
 	end)
-	UIS.InputChanged:Connect(function(input)
-		if not dragging then return end
-		if input.UserInputType == Enum.UserInputType.MouseMovement
-		or input.UserInputType == Enum.UserInputType.Touch then
-			setVisual(fromX(input.Position.X), true)
+
+	if #entradas == 0 then
+		local vazio = novo("Frame", {Size=UDim2.new(1,0,0,50),
+			BackgroundColor3=C.card, BackgroundTransparency=0.5,
+			BorderSizePixel=0, Parent=ListaUI})
+		cantos(vazio, 8)
+		novo("TextLabel", {Size=UDim2.new(1,-20,1,0), Position=UDim2.new(0,10,0,0),
+			BackgroundTransparency=1,
+			Text="Nenhum preset ainda.\nSalve o primeiro!",
+			TextColor3=C.textDim, Font=Enum.Font.Gotham, TextSize=11,
+			TextWrapped=true, TextXAlignment=Enum.TextXAlignment.Left, Parent=vazio})
+	else
+		for i, entrada in ipairs(entradas) do
+			renderLinha(entrada.id, entrada.obj, i)
 		end
-	end)
-	UIS.InputEnded:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1
-		o
+	end
+end
+
+BtnSalvar.MouseButton1Click:Connect(function()
+	local nome = nomeInput.Text
+	if nome == "" then nome = "Preset de " .. player.DisplayName end
+
+	local id = gerarId()
+	local obj = {
+		name = nome,
+		ownerId = MEU_ID,
+		ownerName = MEU_NOME,
+		timestamp = os.time(),
+		data = capturar(),
+	}
+
+	PresetsCache[id] = obj
+
+	if firebaseDisponivel() then
+		task.spawn(function()
+			local ok = enviarServidor(id, obj)
+			if ok then
+				notificar("ðŸŒ '"..nome.."' salvo no servidor!", C.success, 2.5)
+				sincronizarPresets()
+			else
+				notificar("âš ï¸ Salvo localmente (falha no servidor)", C.warn, 2.5)
+				salvarLocal()
+			end
+		end)
+	else
+		salvarLocal()
+		notificar("ðŸ’¾ '"..nome.."' salvo (local)", C.warn, 2)
+	end
+
+	atualizarLista()
+	nomeInput.Text = ""
+end)
+
+BtnSync.MouseButton1Click:Connect(function()
+	sincronizarPresets(true)
+end)
+
+--==========================================
+-- FOOTER
+--==========================================
+local Footer = novo("Frame", {Size=UDim2.new(1,-24,0,90),
+	Position=UDim2.new(0,12,1,-98), BackgroundTransparency=1, Parent=Frame})
+local BtnAplicar = botao(Footer, "âœ”  Aplicar", C.accent, 38)
+BtnAplicar.Size = UDim2.new(1,0,0,38)
+BtnAplicar.Position = UDim2.new(0,0,0,0)
+local BtnRemover = botao(Footer, "ðŸ—‘  Remover", C.danger, 34)
+BtnRemover.Size = UDim2.new(0.49,-3,0,34)
+BtnRemover.Position = UDim2.new(0,0,0,44)
+local BtnReset = botao(Footer, "â†»  Reset", C.card, 34)
+BtnReset.Size = UDim2.new(0.49,-3,0,34)
+BtnReset.Position = UDim2.new(0.51,3,0,44)
+
+--==========================================
+-- BOLINHA
+--==========================================
+local Bolinha = novo("TextButton", {Size=UDim2.new(0,52,0,52),
+	Position=UDim2.new(0,20,0,20), BackgroundColor3=C.accent,
+	Text="âœ¨", TextSize=24, AutoButtonColor=false, Visible=false, Parent=ScreenGui})
+cantos(Bolinha, 26); gradiente(Bolinha, C.accent, C.accent2, 45)
+stroke(Bolinha, Color3.fromRGB(255,255,255), 2, 0.6)
+
+--==========================================
+-- DRAG
+--==========================================
