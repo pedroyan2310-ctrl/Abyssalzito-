@@ -662,3 +662,219 @@ stroke(Bolinha, Color3.fromRGB(255,255,255), 2, 0.6)
 --==========================================
 -- DRAG
 --==========================================
+local function tornarArrastavel(handle, alvo)
+	local dragging, dragIni, startPos
+	handle.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1
+		or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragIni = input.Position
+			startPos = alvo.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then dragging = false end
+			end)
+		end
+	end)
+	handle.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement
+		or input.UserInputType == Enum.UserInputType.Touch then
+			if dragging then
+				local d = input.Position - dragIni
+				alvo.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X,
+					startPos.Y.Scale, startPos.Y.Offset + d.Y)
+			end
+		end
+	end)
+end
+tornarArrastavel(Header, Frame)
+tornarArrastavel(Bolinha, Bolinha)
+
+--==========================================
+-- MIN / FECHAR
+--==========================================
+local function minimizar()
+	Frame.Visible = false
+	Bolinha.Position = UDim2.new(0, Frame.AbsolutePosition.X + 160, 0, Frame.AbsolutePosition.Y + 10)
+	Bolinha.Visible = true
+	State.minimizado = true
+end
+local function restaurar()
+	Frame.Visible = true; Bolinha.Visible = false; State.minimizado = false
+end
+BtnMin.MouseButton1Click:Connect(minimizar)
+BtnFechar.MouseButton1Click:Connect(function()
+	ScreenGui.Enabled = false; State.escondido = true
+end)
+Bolinha.MouseButton1Click:Connect(restaurar)
+UIS.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.KeyCode == Enum.KeyCode.RightShift then
+		if State.escondido then
+			ScreenGui.Enabled = true; State.escondido = false
+		elseif State.minimizado then restaurar()
+		else minimizar() end
+	end
+end)
+
+--==========================================
+-- render
+--==========================================
+render = function()
+	if W["Tamanho X"] then State.sx = W["Tamanho X"]:get() end
+	if W["Tamanho Y"] then State.sy = W["Tamanho Y"]:get() end
+	if W["Tamanho Z"] then State.sz = W["Tamanho Z"]:get() end
+	if W["PosiÃ§Ã£o X"] then State.px = W["PosiÃ§Ã£o X"]:get() end
+	if W["PosiÃ§Ã£o Y"] then State.py = W["PosiÃ§Ã£o Y"]:get() end
+	if W["PosiÃ§Ã£o Z"] then State.pz = W["PosiÃ§Ã£o Z"]:get() end
+	if W["RotaÃ§Ã£o X"] then State.rx = W["RotaÃ§Ã£o X"]:get() end
+	if W["RotaÃ§Ã£o Y"] then State.ry = W["RotaÃ§Ã£o Y"]:get() end
+	if W["RotaÃ§Ã£o Z"] then State.rz = W["RotaÃ§Ã£o Z"]:get() end
+	if W["TransparÃªncia"] then State.transp = W["TransparÃªncia"]:get() end
+	if W["Vermelho (R)"] then State.cr = W["Vermelho (R)"]:get() end
+	if W["Verde (G)"] then State.cg = W["Verde (G)"]:get() end
+	if W["Azul (B)"] then State.cb = W["Azul (B)"]:get() end
+	if W["Intensidade"] then State.bright = W["Intensidade"]:get() end
+	if W["Alcance"] then State.range = W["Alcance"]:get() end
+	if W["Ã‚ngulo"] then State.angle = W["Ã‚ngulo"]:get() end
+
+	local p = State.part
+	if not p or not p.Parent then return end
+
+	local transAlvo = State.mostrarCaixa and State.transp or math.max(State.transp, 1)
+	p.Size = Vector3.new(State.sx, State.sy, State.sz)
+	p.Transparency = transAlvo
+
+	State.baseRot = CFrame.new(State.px, State.py, State.pz)
+		* CFrame.Angles(math.rad(State.rx), math.rad(State.ry), math.rad(State.rz))
+
+	if State.weld then
+		State.weld.C0 = State.baseRot
+			* CFrame.Angles(0, math.rad(State.spinAngle), 0)
+	end
+	if State.light then
+		if not State.rainbow then
+			State.light.Color = Color3.fromRGB(State.cr, State.cg, State.cb)
+		end
+		State.light.Brightness = State.bright
+		State.light.Range = State.range
+		State.light.Angle = State.angle
+	end
+	if State.imgLabel then
+		State.imgLabel.Image = (State.imgId ~= "")
+			and ("rbxthumb://type=Asset&id="..State.imgId.."&w=420&h=420") or ""
+	end
+end
+
+--==========================================
+-- APLICAR / REMOVER / RESET
+--==========================================
+BtnAplicar.MouseButton1Click:Connect(function()
+	local char = player.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	if not hum then notificar("Personagem nÃ£o encontrado", C.danger); return end
+	if not hum.SeatPart then notificar("Sente-se em um veÃ­culo primeiro", C.warn); return end
+
+	local alvo = hum.SeatPart
+	local antigo = alvo:FindFirstChild("UnderglowImagePart")
+	if antigo then antigo:Destroy() end
+	render()
+
+	local part = novo("Part", {
+		Name="UnderglowImagePart", Anchored=false, CanCollide=false,
+		Massless=true, CanQuery=false, CanTouch=false, CastShadow=false,
+		Material=Enum.Material.SmoothPlastic,
+		Transparency = State.mostrarCaixa and State.transp or 1,
+		Color=Color3.fromRGB(255,255,255),
+		Size=Vector3.new(State.sx, State.sy, State.sz),
+		Parent=alvo,
+	})
+	local sg = novo("SurfaceGui", {Name="ImagemGui", Face=Enum.NormalId.Top,
+		LightInfluence=0, SizingMode=Enum.SurfaceGuiSizingMode.PixelsPerStud,
+		PixelsPerStud=50, AlwaysOnTop=false, Parent=part})
+	local imgLabel = novo("ImageLabel", {Size=UDim2.new(1,0,1,0),
+		BackgroundTransparency=1, Image="", Parent=sg})
+	local luz = novo("SurfaceLight", {Name="LuzUnderglow",
+		Face=Enum.NormalId.Bottom, Angle=State.angle,
+		Brightness=State.bright, Range=State.range,
+		Color=Color3.fromRGB(State.cr, State.cg, State.cb),
+		Shadows=false, Parent=part})
+	local weld = novo("Weld", {Part0=alvo, Part1=part, Parent=part})
+
+	State.part, State.weld, State.light, State.imgLabel = part, weld, luz, imgLabel
+	State.spinAngle = 0
+	render()
+	notificar("âœ” Aplicado no veÃ­culo!", C.success)
+end)
+
+BtnRemover.MouseButton1Click:Connect(function()
+	local removido = false
+	if State.part and State.part.Parent then
+		State.part:Destroy(); removido = true
+	end
+	local char = player.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	if hum and hum.SeatPart then
+		local sobra = hum.SeatPart:FindFirstChild("UnderglowImagePart")
+		if sobra then sobra:Destroy(); removido = true end
+	end
+	State.part, State.weld, State.light, State.imgLabel = nil, nil, nil, nil
+	if removido then notificar("ðŸ—‘ Underglow removido", C.danger)
+	else notificar("Nada para remover", C.textDim) end
+end)
+
+local RESET_VALUES = {
+	["Tamanho X"]=10, ["Tamanho Y"]=0.15, ["Tamanho Z"]=15,
+	["PosiÃ§Ã£o X"]=0, ["PosiÃ§Ã£o Y"]=-1.8, ["PosiÃ§Ã£o Z"]=0,
+	["RotaÃ§Ã£o X"]=0, ["RotaÃ§Ã£o Y"]=0, ["RotaÃ§Ã£o Z"]=0,
+	["TransparÃªncia"]=1, ["Vermelho (R)"]=0, ["Verde (G)"]=180, ["Azul (B)"]=255,
+	["Intensidade"]=4, ["Alcance"]=16, ["Ã‚ngulo"]=120,
+	["Velocidade do Giro"]=45, ["Velocidade do Pulso"]=4,
+}
+BtnReset.MouseButton1Click:Connect(function()
+	for nome, valor in pairs(RESET_VALUES) do
+		if W[nome] then W[nome]:set(valor) end
+	end
+	for _, n in ipairs(CAMPOS_TOGGLE) do
+		if W[n] then W[n]:set(false) end
+	end
+	render()
+	notificar("â†» Valores restaurados", C.accent)
+end)
+
+--==========================================
+-- LOOP DE EFEITOS
+--==========================================
+RunService.RenderStepped:Connect(function(dt)
+	State.tempo = State.tempo + dt
+	local p = State.part
+	if not p or not p.Parent then return end
+	if State.rainbow and State.light then
+		State.light.Color = Color3.fromHSV((State.tempo * 0.25) % 1, 1, 1)
+	end
+	if State.pulse and State.light then
+		local vel = W["Velocidade do Pulso"] and W["Velocidade do Pulso"]:get() or 4
+		State.light.Brightness = State.bright * (0.6 + math.sin(State.tempo * vel) * 0.4)
+	end
+	if State.spin and State.weld then
+		local vel = W["Velocidade do Giro"] and W["Velocidade do Giro"]:get() or 45
+		State.spinAngle = (State.spinAngle + dt * vel) % 360
+		State.weld.C0 = State.baseRot * CFrame.Angles(0, math.rad(State.spinAngle), 0)
+	end
+end)
+
+--==========================================
+-- INIT
+--==========================================
+carregarLocal()
+atualizarLista()
+trocarAba("Imagem")
+
+task.spawn(function()
+	task.wait(0.5)
+	if firebaseDisponivel() then
+		notificar("ðŸŒ Conectando ao servidor...", C.accent, 2)
+		sincronizarPresets()
+	else
+		notificar("ðŸ“ Modo local (sem servidor configurado)", C.warn, 3)
+	end
+end)
