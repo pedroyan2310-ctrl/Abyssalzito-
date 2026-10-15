@@ -1,880 +1,161 @@
---[[
-	â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-	  CUSTOM GLOWS & IMAGENS  â€¢  v5.0
-	  UnderGlow Studio  â€¢  Presets compartilhados + Dono
-	  âœ¨ CrÃ©ditos: ABYSSAL
-	â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
---]]
-
--- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
--- â•‘  CONFIGURAÃ‡ÃƒO â€” COLE SUA URL DO FIREBASE AQUI            â•‘
--- â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-local CONFIG = {
-	FIREBASE_URL = "",  -- ex: "https://meu-projeto-default-rtdb.firebaseio.com"
-	-- Se vazio, os presets ficam sÃ³ na sua sessÃ£o (nÃ£o compartilham)
-	PULAR_SPLASH = false, -- true = pula a tela de crÃ©ditos
-}
-
---==========================================
--- ðŸŽ¬ SPLASH DE CRÃ‰DITOS â€” ABYSSAL
---==========================================
-if not CONFIG.PULAR_SPLASH then
-	local ok = pcall(function()
-		local TS = game:GetService("TweenService")
-
-		local function novo_(cls, props, parent)
-			local i = Instance.new(cls)
-			if props then for k,v in pairs(props) do i[k]=v end end
-			if parent then i.Parent = parent end
-			return i
-		end
-		local function cantos_(i, r) return novo_("UICorner", {CornerRadius=UDim.new(0, r or 6)}, i) end
-		local function grad_(i, c1, c2, rot)
-			return novo_("UIGradient", {Color=ColorSequence.new(c1,c2), Rotation=rot or 0}, i)
-		end
-		local function stroke_(i, cor, esp, tr)
-			return novo_("UIStroke", {Color=cor, Thickness=esp or 1, Transparency=tr or 0}, i)
-		end
-
-		local parentUI
-		if gethui then
-			local ok2, r = pcall(gethui)
-			if ok2 and r then parentUI = r end
-		end
-		parentUI = parentUI or game:GetService("CoreGui")
-
-		local oldSplash = parentUI:FindFirstChild("AbyssalSplash")
-		if oldSplash then oldSplash:Destroy() end
-
-		local SplashGui = novo_("ScreenGui", {
-			Name = "AbyssalSplash",
-			ResetOnSpawn = false,
-			IgnoreGuiInset = true,
-			ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-			DisplayOrder = 999,
-			Parent = parentUI,
-		})
-
-		local Bg = novo_("Frame", {
-			Size = UDim2.new(1,0,1,0),
-			BackgroundColor3 = Color3.fromRGB(8,8,12),
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Parent = SplashGui,
-		})
-
-		local Center = novo_("Frame", {
-			Size = UDim2.new(0, 340, 0, 200),
-			Position = UDim2.new(0.5, -170, 0.5, -100),
-			BackgroundColor3 = Color3.fromRGB(18,18,24),
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Parent = Bg,
-		})
-		cantos_(Center, 18)
-		local centerStroke = stroke_(Center, Color3.fromRGB(0,170,255), 1.5, 0.4)
-
-		local glow = novo_("Frame", {
-			Size = UDim2.new(1, 20, 1, 20),
-			Position = UDim2.new(0, -10, 0, -10),
-			BackgroundColor3 = Color3.fromRGB(0,170,255),
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			ZIndex = 0,
-			Parent = Center,
-		})
-		cantos_(glow, 24)
-
-		local IconBox = novo_("Frame", {
-			Size = UDim2.new(0, 60, 0, 60),
-			Position = UDim2.new(0.5, -30, 0, 22),
-			BackgroundColor3 = Color3.fromRGB(0,170,255),
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Parent = Center,
-		})
-		cantos_(IconBox, 16)
-		grad_(IconBox, Color3.fromRGB(0,170,255), Color3.fromRGB(130,70,255), 45)
-		stroke_(IconBox, Color3.fromRGB(255,255,255), 2, 0.7)
-
-		local IconTxt = novo_("TextLabel", {
-			Size = UDim2.new(1,0,1,0),
-			BackgroundTransparency = 1,
-			Text = "âœ¨",
-			TextSize = 30,
-			Font = Enum.Font.GothamBold,
-			TextColor3 = Color3.fromRGB(255,255,255),
-			TextTransparency = 1,
-			Parent = IconBox,
-		})
-
-		local Apresenta = novo_("TextLabel", {
-			Size = UDim2.new(1,0,0,14),
-			Position = UDim2.new(0,0,0,92),
-			BackgroundTransparency = 1,
-			Text = "APRESENTA",
-			TextColor3 = Color3.fromRGB(140,140,160),
-			TextTransparency = 1,
-			Font = Enum.Font.GothamMedium,
-			TextSize = 10,
-			Parent = Center,
-		})
-
-		local NomeLbl = novo_("TextLabel", {
-			Size = UDim2.new(1,0,0,44),
-			Position = UDim2.new(0,0,0,106),
-			BackgroundTransparency = 1,
-			Text = "ABYSSAL",
-			TextColor3 = Color3.fromRGB(255,255,255),
-			TextTransparency = 1,
-			Font = Enum.Font.GothamBold,
-			TextSize = 34,
-			Parent = Center,
-		})
-		grad_(NomeLbl, Color3.fromRGB(0,170,255), Color3.fromRGB(180,90,255), 0)
-
-		local Subtitulo = novo_("TextLabel", {
-			Size = UDim2.new(1,0,0,16),
-			Position = UDim2.new(0,0,0,148),
-			BackgroundTransparency = 1,
-			Text = "UnderGlow Studio  â€¢  v5.0",
-			TextColor3 = Color3.fromRGB(140,140,160),
-			TextTransparency = 1,
-			Font = Enum.Font.Gotham,
-			TextSize = 11,
-			Parent = Center,
-		})
-
-		local BarBg = novo_("Frame", {
-			Size = UDim2.new(0, 240, 0, 4),
-			Position = UDim2.new(0.5, -120, 0, 174),
-			BackgroundColor3 = Color3.fromRGB(40,40,50),
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Parent = Center,
-		})
-		cantos_(BarBg, 2)
-
-		local BarFill = novo_("Frame", {
-			Size = UDim2.new(0, 0, 1, 0),
-			BackgroundColor3 = Color3.fromRGB(0,170,255),
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Parent = BarBg,
-		})
-		cantos_(BarFill, 2)
-		grad_(BarFill, Color3.fromRGB(0,170,255), Color3.fromRGB(180,90,255), 0)
-
-		-- ANIMAÃ‡ÃƒO
-		TS:Create(Bg, TweenInfo.new(0.4), {BackgroundTransparency = 0.15}):Play()
-		task.wait(0.15)
-
-		TS:Create(Center, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-			BackgroundTransparency = 0,
-		}):Play()
-		TS:Create(centerStroke, TweenInfo.new(0.6), {Transparency = 0.2}):Play()
-
-		task.spawn(function()
-			for i = 1, 3 do
-				TS:Create(glow, TweenInfo.new(0.6), {BackgroundTransparency = 0.85}):Play()
-				task.wait(0.6)
-				TS:Create(glow, TweenInfo.new(0.6), {BackgroundTransparency = 1}):Play()
-				task.wait(0.6)
-			end
-		end)
-
-		task.wait(0.1)
-		TS:Create(IconBox, TweenInfo.new(0.4), {BackgroundTransparency = 0}):Play()
-		TS:Create(IconTxt, TweenInfo.new(0.4), {TextTransparency = 0}):Play()
-
-		task.wait(0.2)
-		TS:Create(Apresenta, TweenInfo.new(0.35), {TextTransparency = 0}):Play()
-		task.wait(0.15)
-		TS:Create(NomeLbl, TweenInfo.new(0.45), {TextTransparency = 0}):Play()
-		task.wait(0.15)
-		TS:Create(Subtitulo, TweenInfo.new(0.35), {TextTransparency = 0}):Play()
-
-		task.wait(0.25)
-		TS:Create(BarBg, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
-		TS:Create(BarFill, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
-		TS:Create(BarFill, TweenInfo.new(1.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-			Size = UDim2.new(1, 0, 1, 0),
-		}):Play()
-
-		task.wait(1.9)
-
-		TS:Create(Center, TweenInfo.new(0.5), {
-			BackgroundTransparency = 1,
-			Position = UDim2.new(0.5, -170, 0.5, -130),
-		}):Play()
-		TS:Create(centerStroke, TweenInfo.new(0.5), {Transparency = 1}):Play()
-		TS:Create(IconBox, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
-		TS:Create(IconTxt, TweenInfo.new(0.4), {TextTransparency = 1}):Play()
-		TS:Create(Apresenta, TweenInfo.new(0.4), {TextTransparency = 1}):Play()
-		TS:Create(NomeLbl, TweenInfo.new(0.4), {TextTransparency = 1}):Play()
-		TS:Create(Subtitulo, TweenInfo.new(0.4), {TextTransparency = 1}):Play()
-		TS:Create(BarBg, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
-		TS:Create(BarFill, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
-
-		local fadeBg = TS:Create(Bg, TweenInfo.new(0.5), {BackgroundTransparency = 1})
-		fadeBg:Play()
-		fadeBg.Completed:Wait()
-
-		SplashGui:Destroy()
-	end)
-	-- Se algo falhar no splash, ignora e continua
-end
-
---==========================================
--- SERVIÃ‡OS
---==========================================
-local Players      = game:GetService("Players")
-local UIS          = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local RunService   = game:GetService("RunService")
-local HttpService  = game:GetService("HttpService")
-
+-- ==========================================
+-- 🌌 SKYBOX DE ID ÚNICO (SIMPLES & RÁPIDO) 🌳
+-- ==========================================
+local Players = game:GetService("Players")
+local Lighting = game:GetService("Lighting")
+local CoreGui = game:GetService("CoreGui")
 local player = Players.LocalPlayer
 
-local function obterUIParent()
-	if gethui then
-		local ok, r = pcall(gethui)
-		if ok and r then return r end
+local uiParent = (gethui and gethui()) or CoreGui
+
+if uiParent:FindFirstChild("SimpleSkyboxUI") then
+	uiParent.SimpleSkyboxUI:Destroy()
+end
+
+-- Função para aplicar o mesmo ID em todas as faces
+local function aplicarIdUnico(assetId)
+	local idFormatado = "rbxassetid://" .. tostring(assetId)
+	
+	local skyObj = Lighting:FindFirstChildOfClass("Sky")
+	if not skyObj then
+		skyObj = Instance.new("Sky")
+		skyObj.Parent = Lighting
 	end
-	return game:GetService("CoreGui")
-end
-local uiParent = obterUIParent()
-
-do
-	local antigo = uiParent:FindFirstChild("PainelAuraDelta")
-	if antigo then antigo:Destroy() end
-end
-
-local C = {
-	bg = Color3.fromRGB(14,14,18), panel = Color3.fromRGB(22,22,28),
-	card = Color3.fromRGB(30,30,38), input = Color3.fromRGB(40,40,50),
-	accent = Color3.fromRGB(0,170,255), accent2 = Color3.fromRGB(130,70,255),
-	text = Color3.fromRGB(235,235,240), textDim = Color3.fromRGB(140,140,160),
-	success = Color3.fromRGB(60,210,130), danger = Color3.fromRGB(235,70,90),
-	warn = Color3.fromRGB(245,180,60), gold = Color3.fromRGB(255,190,60),
-	border = Color3.fromRGB(48,48,60),
-}
-
-local State = {
-	imgId = "",
-	sx = 10, sy = 0.15, sz = 15,
-	px = 0, py = -1.8, pz = 0,
-	rx = 0, ry = 0, rz = 0,
-	transp = 1,
-	cr = 0, cg = 180, cb = 255,
-	bright = 4, range = 16, angle = 120,
-	mostrarCaixa = false,
-	pulse = false, rainbow = false, spin = false,
-	part = nil, weld = nil, light = nil, imgLabel = nil,
-	baseRot = CFrame.new(),
-	spinAngle = 0, tempo = 0,
-	minimizado = false, escondido = false,
-}
-
-local render
-local W = {}
-local PresetsCache = {}
-local atualizarLista, sincronizarPresets
-
---==========================================
--- HTTP HELPER
---==========================================
-local httpReq
-do
-	httpReq = (syn and syn.request)
-		or (http and http.request)
-		or http_request
-		or (fluxus and fluxus.request)
-		or (request)
+	
+	-- Aplica a mesma imagem nas 6 direções
+	skyObj.SkyboxBk = idFormatado
+	skyObj.SkyboxDn = idFormatado
+	skyObj.SkyboxFt = idFormatado
+	skyObj.SkyboxLf = idFormatado
+	skyObj.SkyboxRt = idFormatado
+	skyObj.SkyboxUp = idFormatado
+	
+	print("🌌 [Skybox] Aplicado ID único:", assetId)
 end
 
-local function http(method, url, body)
-	if not httpReq then return nil end
-	local ok, resp = pcall(function()
-		return httpReq({
-			Url = url, Method = method, Body = body,
-			Headers = { ["Content-Type"] = "application/json" },
-		})
-	end)
-	if not ok then return nil end
-	return resp
-end
-
-local function firebaseDisponivel()
-	return CONFIG.FIREBASE_URL ~= ""
-		and CONFIG.FIREBASE_URL ~= nil
-		and httpReq ~= nil
-end
-
---==========================================
--- HELPERS UI
---==========================================
-local function novo(classe, props, parent)
-	local i = Instance.new(classe)
-	if props then for k,v in pairs(props) do i[k] = v end end
-	if parent then i.Parent = parent end
-	return i
-end
-local function cantos(i, r) return novo("UICorner", {CornerRadius = UDim.new(0, r or 6)}, i) end
-local function gradiente(i, c1, c2, rot)
-	return novo("UIGradient", {Color = ColorSequence.new(c1,c2), Rotation = rot or 0}, i)
-end
-local function stroke(i, cor, esp, tr)
-	return novo("UIStroke", {Color=cor or C.border, Thickness=esp or 1, Transparency=tr or 0.4}, i)
-end
-local function fnum(v, step)
-	if step >= 1 then return tostring(math.floor(v + 0.5)) end
-	local s = string.format("%.2f", v):gsub("(%-?%d+%.?%d-)0+$", "%1"):gsub("%.$", "")
-	return s
-end
-
---==========================================
--- NOTIFICAÃ‡Ã•ES
---==========================================
-local NotifContainer
-local function notificar(msg, cor, dur)
-	cor = cor or C.accent; dur = dur or 2
-	if not NotifContainer then return end
-	local card = novo("Frame", {Size=UDim2.new(1,0,0,34), BackgroundColor3=C.card,
-		BorderSizePixel=0, Parent=NotifContainer})
-	cantos(card, 6); stroke(card, cor, 1, 0.5)
-	novo("Frame", {Size=UDim2.new(0,3,1,0), BackgroundColor3=cor,
-		BorderSizePixel=0, Parent=card})
-	novo("TextLabel", {Size=UDim2.new(1,-20,1,0), Position=UDim2.new(0,14,0,0),
-		BackgroundTransparency=1, Text=msg, TextColor3=C.text,
-		Font=Enum.Font.GothamMedium, TextSize=12, TextXAlignment=Enum.TextXAlignment.Left,
-		TextTruncate=Enum.TextTruncate.AtEnd, Parent=card})
-	card.BackgroundTransparency = 1
-	card.Position = UDim2.new(0,20,0,0)
-	TweenService:Create(card, TweenInfo.new(0.25), {
-		BackgroundTransparency=0, Position=UDim2.new(0,0,0,0)}):Play()
-	task.delay(dur, function()
-		if not card.Parent then return end
-		local t = TweenService:Create(card, TweenInfo.new(0.3),
-			{BackgroundTransparency=1, Position=UDim2.new(0,20,0,0)})
-		t:Play(); t.Completed:Wait(); card:Destroy()
-	end)
-end
-
---==========================================
--- ROOT
---==========================================
-local ScreenGui = novo("ScreenGui", {
-	Name="PainelAuraDelta", ResetOnSpawn=false,
-	ZIndexBehavior=Enum.ZIndexBehavior.Sibling,
-	IgnoreGuiInset=true, Parent=uiParent,
-})
-
-NotifContainer = novo("Frame", {Size=UDim2.new(0,260,0,400),
-	Position=UDim2.new(1,-272,1,-300), BackgroundTransparency=1, Parent=ScreenGui})
-novo("UIListLayout", {Padding=UDim.new(0,6),
-	VerticalAlignment=Enum.VerticalAlignment.Bottom,
-	SortOrder=Enum.SortOrder.LayoutOrder}, NotifContainer)
-
-local Frame = novo("Frame", {Size=UDim2.new(0,380,0,540),
-	Position=UDim2.new(0.5,-190,0.5,-270),
-	BackgroundColor3=C.bg, BorderSizePixel=0, Active=true, Parent=ScreenGui})
-cantos(Frame, 14); stroke(Frame, C.border, 1, 0.2)
-
---==========================================
--- HEADER
---==========================================
-local Header = novo("Frame", {Size=UDim2.new(1,0,0,56),
-	BackgroundColor3=C.panel, BorderSizePixel=0, Parent=Frame})
-cantos(Header, 14)
-gradiente(Header, C.accent, C.accent2, 15)
-novo("Frame", {Size=UDim2.new(1,0,1,0), BackgroundColor3=C.panel,
-	BackgroundTransparency=0.87, BorderSizePixel=0, Parent=Header})
-novo("Frame", {Size=UDim2.new(1,0,0,14), Position=UDim2.new(0,0,1,-14),
-	BackgroundColor3=C.panel, BorderSizePixel=0, Parent=Header})
-
-local Icon = novo("TextLabel", {Size=UDim2.new(0,36,0,36),
-	Position=UDim2.new(0,12,0.5,-18), BackgroundColor3=C.accent,
-	Text="âœ¨", TextSize=20, Font=Enum.Font.GothamBold,
-	TextColor3=Color3.fromRGB(255,255,255), Parent=Header})
-cantos(Icon, 9); gradiente(Icon, C.accent, C.accent2, 45)
-
-novo("TextLabel", {Size=UDim2.new(1,-160,0,20), Position=UDim2.new(0,58,0,10),
-	BackgroundTransparency=1, Text="Custom Glows & Imagens", TextColor3=C.text,
-	Font=Enum.Font.GothamBold, TextSize=14, TextXAlignment=Enum.TextXAlignment.Left,
-	Parent=Header})
-
-novo("TextLabel", {Size=UDim2.new(1,-160,0,14), Position=UDim2.new(0,58,0,30),
-	BackgroundTransparency=1, Text="by ABYSSAL â€¢ v5.0",
-	TextColor3=C.textDim, Font=Enum.Font.Gotham, TextSize=10,
-	TextXAlignment=Enum.TextXAlignment.Left, Parent=Header})
-
-local BtnMin = novo("TextButton", {Size=UDim2.new(0,30,0,30),
-	Position=UDim2.new(1,-74,0.5,-15), BackgroundColor3=C.input,
-	Text="â€“", TextColor3=C.text, Font=Enum.Font.GothamBold, TextSize=17,
-	AutoButtonColor=false, Parent=Header})
-cantos(BtnMin, 7)
-
-local BtnFechar = novo("TextButton", {Size=UDim2.new(0,30,0,30),
-	Position=UDim2.new(1,-40,0.5,-15), BackgroundColor3=C.input,
-	Text="Ã—", TextColor3=C.text, Font=Enum.Font.GothamBold, TextSize=20,
-	AutoButtonColor=false, Parent=Header})
-cantos(BtnFechar, 7)
-
---==========================================
--- TABS
---==========================================
-local TabBar = novo("Frame", {Size=UDim2.new(1,-24,0,36),
-	Position=UDim2.new(0,12,0,64), BackgroundColor3=C.panel,
-	BorderSizePixel=0, Parent=Frame})
-cantos(TabBar, 9)
-
-local TabUnderline = novo("Frame", {Size=UDim2.new(0.2,-8,0,2),
-	Position=UDim2.new(0,4,1,-2), BackgroundColor3=C.accent,
-	BorderSizePixel=0, ZIndex=3, Parent=TabBar})
-cantos(TabUnderline, 1); gradiente(TabUnderline, C.accent, C.accent2, 0)
-
-local tabNomes = {"Imagem","Forma","Luz","Efeitos","Presets"}
-local Paginas, TabBtns = {}, {}
-
-for i, nome in ipairs(tabNomes) do
-	local page = novo("ScrollingFrame", {Name=nome,
-		Size=UDim2.new(1,-24,1,-228), Position=UDim2.new(0,12,0,112),
-		BackgroundTransparency=1, BorderSizePixel=0,
-		ScrollBarThickness=3, ScrollBarImageColor3=C.accent,
-		CanvasSize=UDim2.new(0,0,0,0),
-		AutomaticCanvasSize=Enum.AutomaticSize.Y,
-		Visible=false, Parent=Frame})
-	novo("UIListLayout", {Padding=UDim.new(0,6), SortOrder=Enum.SortOrder.LayoutOrder}, page)
-	novo("UIPadding", {PaddingTop=UDim.new(0,4), PaddingBottom=UDim.new(0,8),
-		PaddingRight=UDim.new(0,4)}, page)
-	Paginas[nome] = page
-
-	local btn = novo("TextButton", {Size=UDim2.new(1/#tabNomes,0,1,-6),
-		Position=UDim2.new((i-1)/#tabNomes,0,0,3), BackgroundTransparency=1,
-		Text=nome, TextColor3=C.textDim, Font=Enum.Font.GothamMedium,
-		TextSize=11, AutoButtonColor=false, Parent=TabBar})
-	TabBtns[nome] = btn
-end
-
-local function trocarAba(nome)
-	for n,p in pairs(Paginas) do p.Visible = (n == nome) end
-	for n,b in pairs(TabBtns) do
-		TweenService:Create(b, TweenInfo.new(0.2),
-			{TextColor3 = (n==nome) and Color3.fromRGB(255,255,255) or C.textDim}):Play()
-	end
-	local idx = 1
-	for i,n in ipairs(tabNomes) do if n==nome then idx=i break end end
-	TweenService:Create(TabUnderline,
-		TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-			Position = UDim2.new((idx-1)*(1/#tabNomes), 4, 1, -2),
-			Size = UDim2.new(1/#tabNomes, -8, 0, 2)}):Play()
-
-	if nome == "Presets" then
-		task.spawn(function()
-			if sincronizarPresets then sincronizarPresets() end
-		end)
+local function restaurarOriginal()
+	local skyObj = Lighting:FindFirstChildOfClass("Sky")
+	if skyObj then
+		skyObj:Destroy()
+		print("🌌 [Skybox] Céu original restaurado.")
 	end
 end
 
-for n,b in pairs(TabBtns) do
-	b.MouseButton1Click:Connect(function() trocarAba(n) end)
-end
+-- ==========================================
+-- INTERFACE GRÁFICA (MINI PAINEL DELTA)
+-- ==========================================
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "SimpleSkyboxUI"
+ScreenGui.Parent = uiParent
 
-	local ownerName = obj.ownerName or "Desconhecido"
-	local ehMeu = (ownerId == MEU_ID)
+-- Bolinha Flutuante 🌳
+local circleBtn = Instance.new("TextButton")
+circleBtn.Size = UDim2.new(0, 48, 0, 48)
+circleBtn.Position = UDim2.new(0.02, 0, 0.5, 0)
+circleBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+circleBtn.Text = "🌳"
+circleBtn.TextSize = 24
+circleBtn.Active = true
+circleBtn.Draggable = true
+circleBtn.Parent = ScreenGui
+Instance.new("UICorner", circleBtn).CornerRadius = UDim.new(1, 0)
 
-	local linha = novo("Frame", {Size=UDim2.new(1,0,0,54),
-		BackgroundColor3=C.card, BorderSizePixel=0,
-		LayoutOrder=ordem, Parent=ListaUI})
-	cantos(linha, 8)
-	if ehMeu then stroke(linha, C.accent, 1, 0.3) end
+local circleStroke = Instance.new("UIStroke")
+circleStroke.Color = Color3.fromRGB(46, 204, 113)
+circleStroke.Thickness = 2
+circleStroke.Parent = circleBtn
 
-	local nomeLbl = novo("TextLabel", {
-		Size=UDim2.new(1,-160,0,18), Position=UDim2.new(0,12,0,6),
-		BackgroundTransparency=1, Text=nome,
-		TextColor3 = ehMeu and C.accent or C.text,
-		Font=Enum.Font.GothamBold, TextSize=12,
-		TextXAlignment=Enum.TextXAlignment.Left,
-		TextTruncate=Enum.TextTruncate.AtEnd, Parent=linha})
+-- Painel Principal Compacto
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 250, 0, 180)
+MainFrame.Position = UDim2.new(0.5, -125, 0.5, -90)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
 
-	novo("TextLabel", {
-		Size=UDim2.new(1,-160,0,14), Position=UDim2.new(0,12,0,26),
-		BackgroundTransparency=1,
-		Text = ehMeu and ("â­ " .. ownerName .. " (vocÃª)") or ownerName,
-		TextColor3 = ehMeu and C.gold or C.textDim,
-		Font=Enum.Font.Gotham, TextSize=10,
-		TextXAlignment=Enum.TextXAlignment.Left,
-		TextTruncate=Enum.TextTruncate.AtEnd, Parent=linha})
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -40, 0, 35)
+title.Position = UDim2.new(0, 15, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "SKYBOX 1-ID 🌌 🌳"
+title.TextColor3 = Color3.fromRGB(255, 170, 0)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 13
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = MainFrame
 
-	local bLoad = novo("TextButton", {
-		Size=UDim2.new(0,68,0,28),
-		Position=UDim2.new(1, ehMeu and -148 or -76, 0.5, -14),
-		BackgroundColor3=C.accent, Text="Carregar",
-		TextColor3=Color3.fromRGB(255,255,255),
-		Font=Enum.Font.GothamBold, TextSize=11,
-		AutoButtonColor=false, Parent=linha})
-	cantos(bLoad, 6)
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 26, 0, 26)
+closeBtn.Position = UDim2.new(1, -31, 0, 5)
+closeBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+closeBtn.Text = "✕"
+closeBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 12
+closeBtn.Parent = MainFrame
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
 
-	bLoad.MouseButton1Click:Connect(function()
-		aplicar(obj.data)
-		notificar("âœ” '"..nome.."' carregado", C.success)
-	end)
+closeBtn.MouseButton1Click:Connect(function()
+	MainFrame.Visible = false
+	circleBtn.Visible = true
+end)
 
-	if ehMeu then
-		local bDel = novo("TextButton", {
-			Size=UDim2.new(0,68,0,28),
-			Position=UDim2.new(1,-72,0.5,-14),
-			BackgroundColor3=C.danger, Text="Apagar",
-			TextColor3=Color3.fromRGB(255,255,255),
-			Font=Enum.Font.GothamBold, TextSize=11,
-			AutoButtonColor=false, Parent=linha})
-		cantos(bDel, 6)
+circleBtn.MouseButton1Click:Connect(function()
+	MainFrame.Visible = true
+	circleBtn.Visible = false
+end)
 
-		bDel.MouseButton1Click:Connect(function()
-			if tostring(obj.ownerId or "") ~= MEU_ID then
-				notificar("âŒ VocÃª nÃ£o pode apagar este preset", C.danger)
-				return
-			end
+-- Caixa de Entrada de ID Único
+local boxID = Instance.new("TextBox")
+boxID.Size = UDim2.new(0.9, 0, 0, 36)
+boxID.Position = UDim2.new(0.05, 0, 0, 45)
+boxID.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
+boxID.TextColor3 = Color3.fromRGB(255, 255, 255)
+boxID.PlaceholderText = "Cole seu ID aqui (ex: 805727671)"
+boxID.Font = Enum.Font.Gotham
+boxID.TextSize = 11
+boxID.Text = ""
+boxID.Parent = MainFrame
+Instance.new("UICorner", boxID).CornerRadius = UDim.new(0, 6)
 
-			PresetsCache[id] = nil
+-- Botão Aplicar
+local btnAplicar = Instance.new("TextButton")
+btnAplicar.Size = UDim2.new(0.9, 0, 0, 34)
+btnAplicar.Position = UDim2.new(0.05, 0, 0, 90)
+btnAplicar.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+btnAplicar.Text = "🚀 Mudar Skybox"
+btnAplicar.TextColor3 = Color3.fromRGB(255, 255, 255)
+btnAplicar.Font = Enum.Font.GothamBold
+btnAplicar.TextSize = 12
+btnAplicar.Parent = MainFrame
+Instance.new("UICorner", btnAplicar).CornerRadius = UDim.new(0, 6)
 
-			if firebaseDisponivel() then
-				task.spawn(function()
-					local ok = deletarServidor(id)
-					if not ok then
-						notificar("âš ï¸ Falha ao apagar no servidor", C.warn)
-						task.wait(0.5)
-						sincronizarPresets()
-					end
-				end)
-			else
-				salvarLocal()
-			end
+-- Botão Reset
+local btnReset = Instance.new("TextButton")
+btnReset.Size = UDim2.new(0.9, 0, 0, 32)
+btnReset.Position = UDim2.new(0.05, 0, 0, 132)
+btnReset.BackgroundColor3 = Color3.fromRGB(231, 76, 60)
+btnReset.Text = "🔄 Restaurar Céu do Jogo"
+btnReset.TextColor3 = Color3.fromRGB(255, 255, 255)
+btnReset.Font = Enum.Font.GothamBold
+btnReset.TextSize = 11
+btnReset.Parent = MainFrame
+Instance.new("UICorner", btnReset).CornerRadius = UDim.new(0, 6)
 
-			atualizarLista()
-			notificar("ðŸ—‘ '"..nome.."' apagado", C.danger, 1.5)
-		end)
-	end
-end
-
-atualizarLista = function()
-	for _, c in ipairs(ListaUI:GetChildren()) do
-		if c:IsA("Frame") then c:Destroy() end
-	end
-
-	contadorLbl.Text = "PRESETS (" .. contar() .. ")"
-
-	local entradas = {}
-	for id, obj in pairs(PresetsCache) do
-		if type(obj) == "table" and type(obj.data) == "table" then
-			table.insert(entradas, {id = id, obj = obj})
-		end
-	end
-
-	table.sort(entradas, function(a, b)
-		local aMeu = tostring(a.obj.ownerId or "") == MEU_ID
-		local bMeu = tostring(b.obj.ownerId or "") == MEU_ID
-		if aMeu ~= bMeu then return aMeu end
-		return (a.obj.name or "") < (b.obj.name or "")
-	end)
-
-	if #entradas == 0 then
-		local vazio = novo("Frame", {Size=UDim2.new(1,0,0,50),
-			BackgroundColor3=C.card, BackgroundTransparency=0.5,
-			BorderSizePixel=0, Parent=ListaUI})
-		cantos(vazio, 8)
-		novo("TextLabel", {Size=UDim2.new(1,-20,1,0), Position=UDim2.new(0,10,0,0),
-			BackgroundTransparency=1,
-			Text="Nenhum preset ainda.\nSalve o primeiro!",
-			TextColor3=C.textDim, Font=Enum.Font.Gotham, TextSize=11,
-			TextWrapped=true, TextXAlignment=Enum.TextXAlignment.Left, Parent=vazio})
+-- Conexões dos Botões
+btnAplicar.MouseButton1Click:Connect(function()
+	local idApenasNumeros = boxID.Text:match("%d+")
+	if idApenasNumeros then
+		aplicarIdUnico(idApenasNumeros)
 	else
-		for i, entrada in ipairs(entradas) do
-			renderLinha(entrada.id, entrada.obj, i)
-		end
-	end
-end
-
-BtnSalvar.MouseButton1Click:Connect(function()
-	local nome = nomeInput.Text
-	if nome == "" then nome = "Preset de " .. player.DisplayName end
-
-	local id = gerarId()
-	local obj = {
-		name = nome,
-		ownerId = MEU_ID,
-		ownerName = MEU_NOME,
-		timestamp = os.time(),
-		data = capturar(),
-	}
-
-	PresetsCache[id] = obj
-
-	if firebaseDisponivel() then
-		task.spawn(function()
-			local ok = enviarServidor(id, obj)
-			if ok then
-				notificar("ðŸŒ '"..nome.."' salvo no servidor!", C.success, 2.5)
-				sincronizarPresets()
-			else
-				notificar("âš ï¸ Salvo localmente (falha no servidor)", C.warn, 2.5)
-				salvarLocal()
-			end
-		end)
-	else
-		salvarLocal()
-		notificar("ðŸ’¾ '"..nome.."' salvo (local)", C.warn, 2)
-	end
-
-	atualizarLista()
-	nomeInput.Text = ""
-end)
-
-BtnSync.MouseButton1Click:Connect(function()
-	sincronizarPresets(true)
-end)
-
---==========================================
--- FOOTER
---==========================================
-local Footer = novo("Frame", {Size=UDim2.new(1,-24,0,90),
-	Position=UDim2.new(0,12,1,-98), BackgroundTransparency=1, Parent=Frame})
-local BtnAplicar = botao(Footer, "âœ”  Aplicar", C.accent, 38)
-BtnAplicar.Size = UDim2.new(1,0,0,38)
-BtnAplicar.Position = UDim2.new(0,0,0,0)
-local BtnRemover = botao(Footer, "ðŸ—‘  Remover", C.danger, 34)
-BtnRemover.Size = UDim2.new(0.49,-3,0,34)
-BtnRemover.Position = UDim2.new(0,0,0,44)
-local BtnReset = botao(Footer, "â†»  Reset", C.card, 34)
-BtnReset.Size = UDim2.new(0.49,-3,0,34)
-BtnReset.Position = UDim2.new(0.51,3,0,44)
-
---==========================================
--- BOLINHA
---==========================================
-local Bolinha = novo("TextButton", {Size=UDim2.new(0,52,0,52),
-	Position=UDim2.new(0,20,0,20), BackgroundColor3=C.accent,
-	Text="âœ¨", TextSize=24, AutoButtonColor=false, Visible=false, Parent=ScreenGui})
-cantos(Bolinha, 26); gradiente(Bolinha, C.accent, C.accent2, 45)
-stroke(Bolinha, Color3.fromRGB(255,255,255), 2, 0.6)
-
---==========================================
--- DRAG
---==========================================
-local function tornarArrastavel(handle, alvo)
-	local dragging, dragIni, startPos
-	handle.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1
-		or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragIni = input.Position
-			startPos = alvo.Position
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then dragging = false end
-			end)
-		end
-	end)
-	handle.InputChanged:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseMovement
-		or input.UserInputType == Enum.UserInputType.Touch then
-			if dragging then
-				local d = input.Position - dragIni
-				alvo.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X,
-					startPos.Y.Scale, startPos.Y.Offset + d.Y)
-			end
-		end
-	end)
-end
-tornarArrastavel(Header, Frame)
-tornarArrastavel(Bolinha, Bolinha)
-
---==========================================
--- MIN / FECHAR
---==========================================
-local function minimizar()
-	Frame.Visible = false
-	Bolinha.Position = UDim2.new(0, Frame.AbsolutePosition.X + 160, 0, Frame.AbsolutePosition.Y + 10)
-	Bolinha.Visible = true
-	State.minimizado = true
-end
-local function restaurar()
-	Frame.Visible = true; Bolinha.Visible = false; State.minimizado = false
-end
-BtnMin.MouseButton1Click:Connect(minimizar)
-BtnFechar.MouseButton1Click:Connect(function()
-	ScreenGui.Enabled = false; State.escondido = true
-end)
-Bolinha.MouseButton1Click:Connect(restaurar)
-UIS.InputBegan:Connect(function(input, gp)
-	if gp then return end
-	if input.KeyCode == Enum.KeyCode.RightShift then
-		if State.escondido then
-			ScreenGui.Enabled = true; State.escondido = false
-		elseif State.minimizado then restaurar()
-		else minimizar() end
+		btnAplicar.Text = "⚠️ Cole um ID válido!"
+		task.wait(1.5)
+		btnAplicar.Text = "🚀 Mudar Skybox"
 	end
 end)
 
---==========================================
--- render
---==========================================
-render = function()
-	if W["Tamanho X"] then State.sx = W["Tamanho X"]:get() end
-	if W["Tamanho Y"] then State.sy = W["Tamanho Y"]:get() end
-	if W["Tamanho Z"] then State.sz = W["Tamanho Z"]:get() end
-	if W["PosiÃ§Ã£o X"] then State.px = W["PosiÃ§Ã£o X"]:get() end
-	if W["PosiÃ§Ã£o Y"] then State.py = W["PosiÃ§Ã£o Y"]:get() end
-	if W["PosiÃ§Ã£o Z"] then State.pz = W["PosiÃ§Ã£o Z"]:get() end
-	if W["RotaÃ§Ã£o X"] then State.rx = W["RotaÃ§Ã£o X"]:get() end
-	if W["RotaÃ§Ã£o Y"] then State.ry = W["RotaÃ§Ã£o Y"]:get() end
-	if W["RotaÃ§Ã£o Z"] then State.rz = W["RotaÃ§Ã£o Z"]:get() end
-	if W["TransparÃªncia"] then State.transp = W["TransparÃªncia"]:get() end
-	if W["Vermelho (R)"] then State.cr = W["Vermelho (R)"]:get() end
-	if W["Verde (G)"] then State.cg = W["Verde (G)"]:get() end
-	if W["Azul (B)"] then State.cb = W["Azul (B)"]:get() end
-	if W["Intensidade"] then State.bright = W["Intensidade"]:get() end
-	if W["Alcance"] then State.range = W["Alcance"]:get() end
-	if W["Ã‚ngulo"] then State.angle = W["Ã‚ngulo"]:get() end
-
-	local p = State.part
-	if not p or not p.Parent then return end
-
-	local transAlvo = State.mostrarCaixa and State.transp or math.max(State.transp, 1)
-	p.Size = Vector3.new(State.sx, State.sy, State.sz)
-	p.Transparency = transAlvo
-
-	State.baseRot = CFrame.new(State.px, State.py, State.pz)
-		* CFrame.Angles(math.rad(State.rx), math.rad(State.ry), math.rad(State.rz))
-
-	if State.weld then
-		State.weld.C0 = State.baseRot
-			* CFrame.Angles(0, math.rad(State.spinAngle), 0)
-	end
-	if State.light then
-		if not State.rainbow then
-			State.light.Color = Color3.fromRGB(State.cr, State.cg, State.cb)
-		end
-		State.light.Brightness = State.bright
-		State.light.Range = State.range
-		State.light.Angle = State.angle
-	end
-	if State.imgLabel then
-		State.imgLabel.Image = (State.imgId ~= "")
-			and ("rbxthumb://type=Asset&id="..State.imgId.."&w=420&h=420") or ""
-	end
-end
-
---==========================================
--- APLICAR / REMOVER / RESET
---==========================================
-BtnAplicar.MouseButton1Click:Connect(function()
-	local char = player.Character
-	local hum = char and char:FindFirstChildOfClass("Humanoid")
-	if not hum then notificar("Personagem nÃ£o encontrado", C.danger); return end
-	if not hum.SeatPart then notificar("Sente-se em um veÃ­culo primeiro", C.warn); return end
-
-	local alvo = hum.SeatPart
-	local antigo = alvo:FindFirstChild("UnderglowImagePart")
-	if antigo then antigo:Destroy() end
-	render()
-
-	local part = novo("Part", {
-		Name="UnderglowImagePart", Anchored=false, CanCollide=false,
-		Massless=true, CanQuery=false, CanTouch=false, CastShadow=false,
-		Material=Enum.Material.SmoothPlastic,
-		Transparency = State.mostrarCaixa and State.transp or 1,
-		Color=Color3.fromRGB(255,255,255),
-		Size=Vector3.new(State.sx, State.sy, State.sz),
-		Parent=alvo,
-	})
-	local sg = novo("SurfaceGui", {Name="ImagemGui", Face=Enum.NormalId.Top,
-		LightInfluence=0, SizingMode=Enum.SurfaceGuiSizingMode.PixelsPerStud,
-		PixelsPerStud=50, AlwaysOnTop=false, Parent=part})
-	local imgLabel = novo("ImageLabel", {Size=UDim2.new(1,0,1,0),
-		BackgroundTransparency=1, Image="", Parent=sg})
-	local luz = novo("SurfaceLight", {Name="LuzUnderglow",
-		Face=Enum.NormalId.Bottom, Angle=State.angle,
-		Brightness=State.bright, Range=State.range,
-		Color=Color3.fromRGB(State.cr, State.cg, State.cb),
-		Shadows=false, Parent=part})
-	local weld = novo("Weld", {Part0=alvo, Part1=part, Parent=part})
-
-	State.part, State.weld, State.light, State.imgLabel = part, weld, luz, imgLabel
-	State.spinAngle = 0
-	render()
-	notificar("âœ” Aplicado no veÃ­culo!", C.success)
-end)
-
-BtnRemover.MouseButton1Click:Connect(function()
-	local removido = false
-	if State.part and State.part.Parent then
-		State.part:Destroy(); removido = true
-	end
-	local char = player.Character
-	local hum = char and char:FindFirstChildOfClass("Humanoid")
-	if hum and hum.SeatPart then
-		local sobra = hum.SeatPart:FindFirstChild("UnderglowImagePart")
-		if sobra then sobra:Destroy(); removido = true end
-	end
-	State.part, State.weld, State.light, State.imgLabel = nil, nil, nil, nil
-	if removido then notificar("ðŸ—‘ Underglow removido", C.danger)
-	else notificar("Nada para remover", C.textDim) end
-end)
-
-local RESET_VALUES = {
-	["Tamanho X"]=10, ["Tamanho Y"]=0.15, ["Tamanho Z"]=15,
-	["PosiÃ§Ã£o X"]=0, ["PosiÃ§Ã£o Y"]=-1.8, ["PosiÃ§Ã£o Z"]=0,
-	["RotaÃ§Ã£o X"]=0, ["RotaÃ§Ã£o Y"]=0, ["RotaÃ§Ã£o Z"]=0,
-	["TransparÃªncia"]=1, ["Vermelho (R)"]=0, ["Verde (G)"]=180, ["Azul (B)"]=255,
-	["Intensidade"]=4, ["Alcance"]=16, ["Ã‚ngulo"]=120,
-	["Velocidade do Giro"]=45, ["Velocidade do Pulso"]=4,
-}
-BtnReset.MouseButton1Click:Connect(function()
-	for nome, valor in pairs(RESET_VALUES) do
-		if W[nome] then W[nome]:set(valor) end
-	end
-	for _, n in ipairs(CAMPOS_TOGGLE) do
-		if W[n] then W[n]:set(false) end
-	end
-	render()
-	notificar("â†» Valores restaurados", C.accent)
-end)
-
---==========================================
--- LOOP DE EFEITOS
---==========================================
-RunService.RenderStepped:Connect(function(dt)
-	State.tempo = State.tempo + dt
-	local p = State.part
-	if not p or not p.Parent then return end
-	if State.rainbow and State.light then
-		State.light.Color = Color3.fromHSV((State.tempo * 0.25) % 1, 1, 1)
-	end
-	if State.pulse and State.light then
-		local vel = W["Velocidade do Pulso"] and W["Velocidade do Pulso"]:get() or 4
-		State.light.Brightness = State.bright * (0.6 + math.sin(State.tempo * vel) * 0.4)
-	end
-	if State.spin and State.weld then
-		local vel = W["Velocidade do Giro"] and W["Velocidade do Giro"]:get() or 45
-		State.spinAngle = (State.spinAngle + dt * vel) % 360
-		State.weld.C0 = State.baseRot * CFrame.Angles(0, math.rad(State.spinAngle), 0)
-	end
-end)
-
---==========================================
--- INIT
---==========================================
-carregarLocal()
-atualizarLista()
-trocarAba("Imagem")
-
-task.spawn(function()
-	task.wait(0.5)
-	if firebaseDisponivel() then
-		notificar("ðŸŒ Conectando ao servidor...", C.accent, 2)
-		sincronizarPresets()
-	else
-		notificar("ðŸ“ Modo local (sem servidor configurado)", C.warn, 3)
-	end
+btnReset.MouseButton1Click:Connect(function()
+	restaurarOriginal()
 end)
